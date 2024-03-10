@@ -1,90 +1,60 @@
 # frozen_string_literal: true
 
-require 'mquve/node/heading'
-require 'mquve/node/paragraph'
-require 'mquve/node/code_block'
-require 'mquve/node/horizontal_rule'
-require 'mquve/node/block_quote'
-require 'mquve/parser/open_nodes'
-require 'mquve/node/item'
-require 'mquve/node/list'
-
 module Mquve
   class Parser
     class Block
       def process(parent)
-        opens = OpenNodes.new(parent: parent, nodes: [parent])
+        state = State.new(nodes: [parent])
 
         parent.content.lines.each_with_index do |line, i|
-          if opens.in?(Node::CodeBlock) && opens.bottom.attrs[:info]
-            if (match = line.match(/^ {,3}(```(?<info>.*?)|~~~(?<info>.*?))\n$/))
-              opens.close!
-              next
-            end
+          state.content = line
 
-            opens.bottom.inner += line
-            next
+          match = state.content.match(/^(?<mark>(\s*>)+)(?<content>.*\n)$/)
+          unless match
+            state.close! while state.under?(Node::BlockQuote)
           end
-          if line == "\n"
-            opens.close! until opens.in?(Node::Document) || opens.in?(Node::Item)
-            next
-          end
-          if (match = line.match(/^ {,3}(```(?<info>.*?)|~~~(?<info>.*?))\n$/))
-            opens.close!
-            code_block = Node::CodeBlock.new(content: line.chomp, attrs: { info: match[:info] })
-            opens.open!(code_block)
-            next
-          end
-          if (match = line.match(/^(?<quote>( {,3}>(?<space> *))+).*/))
-            depth = match[:quote].count('>')
-            max_depth = opens.nodes.map { _1.instance_of?(Node::BlockQuote) ? _1.attrs[:depth] : 0 }.max
-            if depth > max_depth
-              opens.close!
-              block_quote = Node::BlockQuote.new(content: '', parent: parent, attrs: { depth: depth })
-              opens.open!(block_quote)
+
+          unless state.in?(Node::CodeBlock)
+            loop do
+              last_content = state.content
+              break if BlockQuote.new.process(state)
+              break if List.new.process(state)
+              break if state.content == last_content
             end
-            opens.close! until opens.in?(Node::BlockQuote) && opens.bottom.attrs[:depth] == depth if max_depth.positive? && depth < max_depth
-            line = line[match[:quote].length..]
           end
-          if (match = line.match(/^ {,3}(?<num>[0-9]+)\.\s+(?<content>.*\n)/))
-            list = Node::List.new(attrs: { start: match[:num], type: :ordered, delimiter: :period })
-            opens.open!(list)
-            item = Node::Item.new
-            opens.open!(item)
-            line = match[:content]
-          end
-          if (match = line.match(/^ {,3}(?<level>\#{1,6}) *(?<content>.*)\n/))
-            opens.close!
-            heading = Node::Heading.new(content: match[:content], parent: parent, attrs: { level: match[:level].length })
-            opens.store!(heading)
-            next
-          end
-          if opens.has_text? && line.match(/^=+\n/)
-            opens.close!
-            heading = Node::Heading.new(content: opens.bottom, parent: parent, attrs: { level: 1 })
-            opens.store!(heading)
-            next
-          end
-          if opens.has_text? && line.match(/^-+\n/)
-            opens.close!
-            heading = Node::Heading.new(content: opens.bottom, parent: parent, attrs: { level: 2 })
-            opens.store!(heading)
-            next
-          end
-          if !opens.has_text? && (match = line.match(/^(?<indent> {4,})(?<content>.*\n)/))
-            opens.close!
-            if opens.in?(Node::CodeBlock)
-              opens.bottom.inner += match[0][4..]
+
+          content = state.content
+
+          next if Comment.new.process(state)
+          next if BlankLine.new.process(state)
+
+          next if FencedCode.new.process(state)
+          next if SetextHeading.new.process(state)
+          next if HorizontalRule.new.process(state)
+
+          if state.content == content && match = state.content.match(/^(?<indent> +)(?<content>.+\n)/)
+            if match[:indent].length > state.current_item.attrs[:indent] + 3 && !state.in?(Node::Paragraph)
+              state = IndentedCode.new.process(state)
+            elsif match[:indent].length < state.current_item.attrs[:indent]
+              2.times { state.close! } unless state.in?(Mquve::Node::BlockQuote)
+              state.open!(Node::Paragraph.new) unless state.in?(Node::Paragraph)
+              state.content = match[:content]
             else
-              code_block = Node::CodeBlock.new(content: match[:content])
-              opens.open!(code_block)
-              next
+              state.open!(Node::Paragraph.new) if !state.in?(Node::Paragraph) && !state.in?(Mquve::Node::CodeBlock)
+              state.content = match[:content]
             end
           end
 
-          opens.close! if opens.in?(Node::CodeBlock) && !opens.bottom.attrs[:info]
-          opens.store_or_open!(line)
-          opens.close! while opens.nodes.length > 1 if i == parent.content.lines.length - 1
+          next if AtxHeading.new.process(state)
+
+          state.open!(Node::Paragraph.new) if !state.in?(Node::Paragraph) && !state.in?(Mquve::Node::CodeBlock) && !state.content.empty?
+          state = String.new.process(state)
+
+          state.current_list.attrs[:tight] = false if state.current_list && state.list_widable
+
+          next unless i == parent.content.lines.length - 1
+
+          state.close! until state.in?(Node::Document)
         end
 
         parent

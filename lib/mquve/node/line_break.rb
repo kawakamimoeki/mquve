@@ -4,7 +4,7 @@ require 'mquve/node/base'
 
 module Mquve
   class Node
-    class HardBreak < Base
+    class LineBreak < Base
       attr_accessor :children, :inner, :outer
       attr_reader :parent, :type
 
@@ -12,22 +12,11 @@ module Mquve
         @inner = "\n"
         @outer = "\n"
         @children = []
-        @type = :hard_break
-      end
-
-      def process!(text)
-        match = match(text)
-        return false unless match
-
-        true
-      end
-
-      def match(text)
-        text.match(/^\n/)
+        @type = :line_break
       end
 
       def inner_html
-        "\n"
+        '<br />'
       end
 
       def inlinize

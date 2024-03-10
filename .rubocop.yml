@@ -45,3 +45,9 @@ Naming/PredicateName:
 
 Style/NestedModifier:
   Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false

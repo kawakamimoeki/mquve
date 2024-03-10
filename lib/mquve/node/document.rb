@@ -3,14 +3,15 @@
 module Mquve
   class Node
     class Document < Base
-      attr_accessor :content, :children, :inner
+      attr_accessor :content, :children, :inner, :attrs
       attr_reader :parent, :type
 
-      def initialize(content = '')
+      def initialize(content = '', attrs: { base: 0, indent: 0, marker: 0, space: 0, depth: 0 })
         @content = content
         @children = []
         @type = :document
         @inner = content
+        @attrs = attrs
       end
 
       def nestable?

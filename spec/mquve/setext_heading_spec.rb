@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Layout/TrailingWhitespace
 # rubocop:disable Layout/HeredocIndentation
 
 RSpec.describe 'Setext headings' do
@@ -22,5 +21,4 @@ Foo *bar*
   end
 end
 
-# rubocop:enable Layout/TrailingWhitespace
 # rubocop:enable Layout/HeredocIndentation

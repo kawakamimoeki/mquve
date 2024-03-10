@@ -3,7 +3,7 @@
 module Mquve
   class Parser
     class Inline
-      TYPES = [Node::Text, Node::HardBreak, Node::Bold, Node::Link, Node::CodeSpan, Node::Image, Node::Italic, Node::Strikethrough].freeze
+      TYPES = [Node::Text, Node::LineBreak, Node::Bold, Node::Link, Node::CodeSpan, Node::Image, Node::Italic, Node::Strikethrough].freeze
 
       def self.process(parent)
         i = 0

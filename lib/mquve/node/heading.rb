@@ -5,13 +5,10 @@ require 'mquve/node/base'
 module Mquve
   class Node
     class Heading < Base
-      ATX = /^\s{,3}(?<level>\#{1,6})\s*(?<content>.*)\n/
-
       attr_accessor :inner, :outer, :children, :level, :attrs
       attr_reader :parent, :type
 
-      def initialize(content:, parent:, attrs: {})
-        @inner = content.gsub(/\s*#+\s*$/, '').strip
+      def initialize(parent: nil, attrs: {})
         @parent = parent
         @children = []
         @attrs = attrs

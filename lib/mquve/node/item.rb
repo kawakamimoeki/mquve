@@ -17,7 +17,7 @@ module Mquve
       end
 
       def outer_html
-        "<li>\n#{inner_html}</li>"
+        "<li>#{parent.attrs[:tight] || children.empty? ? '' : "\n"}#{inner_html}</li>\n"
       end
 
       alias html outer_html

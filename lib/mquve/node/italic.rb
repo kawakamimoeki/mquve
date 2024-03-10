@@ -28,11 +28,15 @@ module Mquve
       end
 
       def match(text)
-        text.match(/^(\*(?<content>.*?)\*|_(?<content>.*?)_)/)
+        match = text.match(/^(\*(?<content>.*?)\*|_(?<content>.*?)_)/)
+        return nil unless match
+        return nil if match[:content].match(/\\$/)
+
+        match
       end
 
       def outer_html
-        "<i>#{inner_html}</i>"
+        "<em>#{inner_html}</em>"
       end
     end
   end

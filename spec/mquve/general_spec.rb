@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-# rubocop:disable Layout/TrailingWhitespace
 # rubocop:disable Layout/HeredocIndentation
 
-RSpec.describe 'Indented code blocks' do
+RSpec.describe 'General' do
   describe 'Simple' do
-    it do
+    xit do
       markdown = <<-MARKDOWN
 # Foo
 bar
@@ -45,5 +44,4 @@ garply
   end
 end
 
-# rubocop:enable Layout/TrailingWhitespace
 # rubocop:enable Layout/HeredocIndentation

@@ -4,7 +4,7 @@ module Mquve
   class Node
     class Base
       def inlinize
-        Mquve::Parser::Inline.process(self)
+        self
       end
 
       def inner_html

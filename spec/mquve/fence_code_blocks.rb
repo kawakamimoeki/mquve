@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Layout/TrailingWhitespace
 # rubocop:disable Layout/HeredocIndentation
 
 RSpec.describe 'Indented code blocks' do
@@ -22,5 +21,4 @@ RSpec.describe 'Indented code blocks' do
   end
 end
 
-# rubocop:enable Layout/TrailingWhitespace
 # rubocop:enable Layout/HeredocIndentation

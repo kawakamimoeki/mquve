@@ -15,7 +15,7 @@ module Mquve
         @type = :soft_break
       end
 
-      def process!(text, parent)
+      def process!(text, _)
         match = match(text)
         return false unless match
 

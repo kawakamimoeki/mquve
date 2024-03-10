@@ -17,8 +17,12 @@ module Mquve
         @attrs = attrs
       end
 
+      def tag
+        attrs[:type] == :ordered ? 'ol' : 'ul'
+      end
+
       def outer_html
-        "<ol>\n#{inner_html}\n</ol>\n"
+        "#{parent.instance_of?(Node::Item) && parent.parent.attrs[:tight] ? "\n" : ''}<#{tag}>\n#{inner_html}</#{tag}>\n"
       end
 
       alias html outer_html

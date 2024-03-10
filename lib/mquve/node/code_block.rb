@@ -19,7 +19,11 @@ module Mquve
       end
 
       def outer_html
-        "<pre><code#{attrs[:info] && !attrs[:info].empty? ? " class=\"language-#{attrs[:info]}\"" : ''}>#{CGI.escapeHTML(inner_html)}</code></pre>\n"
+        "<pre><code#{attrs[:info] && !attrs[:info].empty? ? " class=\"language-#{attrs[:info]}\"" : ''}>#{CGI.escapeHTML(text)}</code></pre>\n"
+      end
+
+      def text
+        children[0].inner
       end
     end
   end

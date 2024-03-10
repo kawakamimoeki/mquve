@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'mquve/node/document'
-
 module Mquve
   class Converter
     def self.process(text)

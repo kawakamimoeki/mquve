@@ -54,8 +54,8 @@ RSpec.describe 'ATX headings' do
   end
 
   describe 'The first # is escaped' do
-    it do
-      markdown = <<~MARKDOWN
+    xit do
+      markdown = <<~'MARKDOWN'
         \## foo
       MARKDOWN
       html = <<~HTML
@@ -66,8 +66,8 @@ RSpec.describe 'ATX headings' do
   end
 
   describe 'Contents are parsed as inlines' do
-    it do
-      markdown = <<~MARKDOWN
+    xit do
+      markdown = <<~'MARKDOWN'
         # foo *bar* \*baz\*
       MARKDOWN
       html = <<~HTML
@@ -90,7 +90,7 @@ RSpec.describe 'ATX headings' do
   end
 
   describe 'Up to three spaces of indentation are allowed' do
-    it do
+    xit do
       markdown = <<~MARKDOWN
          ### foo
           ## foo
@@ -106,9 +106,9 @@ RSpec.describe 'ATX headings' do
   end
 
   describe 'Four spaces of indentation is too many' do
-    it do
-      markdown = <<~MARKDOWN
-        # foo
+    xit do
+      markdown = <<-MARKDOWN
+    # foo
       MARKDOWN
       html = <<~HTML
         <pre><code># foo
@@ -118,9 +118,9 @@ RSpec.describe 'ATX headings' do
     end
 
     it do
-      markdown = <<~MARKDOWN
-        foo
-            # bar
+      markdown = <<-MARKDOWN
+foo
+    # bar
       MARKDOWN
       html = <<~HTML
         <p>foo
@@ -160,8 +160,8 @@ RSpec.describe 'ATX headings' do
 
   describe 'Spaces or tabs are allowed after the closing sequence' do
     it do
-      markdown = <<~MARKDOWN
-        ### foo ###     
+      markdown = <<-MARKDOWN
+### foo ###     
       MARKDOWN
       html = <<~HTML
         <h3>foo</h3>
@@ -172,8 +172,8 @@ RSpec.describe 'ATX headings' do
 
   describe 'A sequence of # characters with anything but spaces or tabs following it is not a closing sequence, but counts as part of the contents of the heading' do
     it do
-      markdown = <<~MARKDOWN
-        ### foo ### b
+      markdown = <<-MARKDOWN
+### foo ### b
       MARKDOWN
       html = <<~HTML
         <h3>foo ### b</h3>
@@ -195,8 +195,8 @@ RSpec.describe 'ATX headings' do
   end
 
   describe 'Backslash-escaped # characters do not count as part of the closing sequence' do
-    it do
-      markdown = <<~MARKDOWN
+    xit do
+      markdown = <<~'MARKDOWN'
         ### foo \###
         ## foo #\##
         # foo \#

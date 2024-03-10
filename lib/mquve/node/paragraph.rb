@@ -5,14 +5,10 @@ require 'mquve/node/base'
 module Mquve
   class Node
     class Paragraph < Base
-      PATTERN = /(?<content>.+\n)$/
-      EXCLUDED = /^\s*(\#{1,6}|[-*+]\s+|[1-9]+\.\s+|.+\|.+|> |-{3,}|\*{3,}|```|~~~)/
-
-      attr_accessor :children, :outer
+      attr_accessor :children, :outer, :inner
       attr_reader :parent, :type
 
-      def initialize(content:, parent: nil, attrs: {})
-        @outer = content
+      def initialize(parent: nil, attrs: {})
         @children = []
         @type = :paragraph
         @parent = parent
@@ -23,12 +19,15 @@ module Mquve
         true
       end
 
-      def inner
-        outer.chomp.chomp
-      end
-
       def outer_html
-        "<p>#{inner_html}</p>\n"
+        h = inner_html
+        if parent.instance_of?(Item) && parent.parent.attrs[:tight]
+          return "#{h}\n" if parent.children.length > 1
+
+          return h
+        end
+
+        "<p>#{inner_html.chomp}</p>\n"
       end
 
       alias html outer_html
